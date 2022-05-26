@@ -41,3 +41,42 @@ class MotoTests(APITestCase):
         things = response.data
         self.assertEqual(len(things), 1)
         self.assertEqual(things[0]["model"], "Model")
+
+    def test_get_moto_by_id(self):
+        url = reverse("moto_detail", args=(1,))
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        moto = response.data
+        self.assertEqual(moto["brand"], "KTM")
+
+        url = reverse("moto_list")
+        data = {"owner": 1, "model": "Model", "engine_size": "125", 'brand': 'KTM', 'year': '2020'}
+        response = self.client.post(url, data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        moto = Moto.objects.all()
+        self.assertEqual(len(moto), 2)
+        self.assertEqual(Moto.objects.get(id=2).model, "Model")
+
+    def test_update_moto(self):
+        url = reverse("moto_detail", args=(1,))
+        data = {
+            "owner": 1,
+            "model": "Model",
+            "engine_size": "125",
+            "brand" : 'KTM',
+            "year" : '2020',
+        }
+        response = self.client.put(url, data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        moto = Moto.objects.get(id=1)
+        self.assertEqual(moto.model, data["model"])
+        self.assertEqual(moto.owner.id, data["owner"])
+        self.assertEqual(moto.engine_size, data["engine_size"])
+
+    def test_delete_moto(self):
+        url = reverse("moto_detail", args=(1,))
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
+        things = Moto.objects.all()
+        self.assertEqual(len(things), 0)
+        
