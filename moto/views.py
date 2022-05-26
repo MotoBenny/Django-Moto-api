@@ -8,6 +8,6 @@ class MotoList(generics.ListCreateAPIView):
     serializer_class = MotoSerializer
 
 
-class MotoDetail(generics.RetrieveUpdateAPIView):
+class MotoDetail(generics.RetrieveUpdateDestroyAPIView):
     queryset = Moto.objects.all()
     serializer_class = MotoSerializer
